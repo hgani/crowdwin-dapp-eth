@@ -1,0 +1,18 @@
+{
+  "name": "wewin",
+  "private": true,
+  "dependencies": {
+    "@rails/webpacker": "3.5",
+    "lodash": "^4.17.10",
+    "pug": "^2.0.3",
+    "vue": "^2.5.16",
+    "vue-loader": "14.2.2",
+    "vue-progressbar": "^0.7.5",
+    "vue-router": "^3.0.1",
+    "vue-template-compiler": "^2.5.16",
+    "web3-helper": "https://github.com/agusputra/web3-helper"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "2.11.2"
+  }
+}
