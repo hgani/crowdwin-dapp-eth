@@ -2,7 +2,7 @@
   div
     h1 Games
     div(v-for="(game, index) in games")
-      game( 
+      game(
         :game="game"
       )
 </template>
@@ -35,11 +35,13 @@ export default {
       success(data) {
         for (const game of data.games) {
           game.balance = null;
+          game.released = null;
           game.closingTime = null;
           game.minimumFund = null;
           game.options = JSON.parse(game.options);
           game.optionVotes = [];
           game.optionFunds = [];
+          game.winners = [];
           game.addressUrl = `${web3Helper.viewAddressPath}/${game.address}`;
           game.creatorUrl = `${web3Helper.viewAddressPath}/${game.creator}`;
           game.txUrl = `${web3Helper.viewTxPath}/${game.tx_hash}`;
@@ -67,6 +69,18 @@ export default {
               if (err) throw err;
 
               game.minimumFund = parseInt(data);
+            });
+
+            contract.released.call((err, data) => {
+              if (err) throw err;
+
+              game.released = data;
+            });
+
+            contract.getWinners.call((err, data) => {
+              if (err) throw err;
+
+              game.winners = data;
             });
 
             for (const key in game.options) {
