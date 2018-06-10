@@ -23,30 +23,29 @@
           a(href="" @click.prevent="toggleInfo") {{ showInfo ? 'Hide Info' : 'Show Info' }}
     .card-body(v-if="game.currentUserCreator")
       p
-        strong Balance: &nbsp;
+        strong Pool: &nbsp;
         | {{game.balance / 1e18}} ETH
-        br
-        strong Minimum Fund: &nbsp;
-        | {{game.minimumFund / 1e18}} ETH
+      p
+        strong Closing Time: &nbsp;
+        | {{game.closingTime.toLocaleString()}}
+        span.badge.badge-danger.ml-2(v-if='hasClosed')
+          | passed
     .card-footer.bg-white
-        p
-          | Closing Time: {{game.closingTime ? game.closingTime.toLocaleString() : '-'}}
-        strong Options
+        strong Crowd Predictions
         div.my-3.py-2.px-1.bg-light(
           v-for='(option, index) in game.options'
         )
           .d-flex.flex-row.justify-content-between
-            .d-inline-block {{option}} ({{game.optionFunds[index] / 1e18}} ETH)
+            .d-inline-block {{option}} ({{(game.optionFunds[index] || 0) / 1e18}} ETH)
             .d-inline-block
               button.btn.btn-primary.mr-1(
-                v-if="!game.currentUserCreator"
                 @click='vote(index)'
-                :disabled="submitting"
-              ) Vote
-          .mt-1(v-if="game.optionVotes[index] && game.optionVotes[index].currentUserFund")
-            | You've voted {{game.optionVotes[index].currentUserFund / 1e18}} ETH
+                :d="submitting"
+              ) Vote 0.1 ETH
+          .mt-1.mr-1.clearfix(v-if="game.optionVotes[index] && game.optionVotes[index].currentUserFund")
+            small.float-right You've voted {{game.optionVotes[index].currentUserFund / 1e18}} ETH
         div
-          .mb-3( v-if='hasClosed && isCreator && !game.released')
+          .mb-3(v-if='hasClosed && isCreator && !game.released')
             button.btn.btn-danger(
               @click='calculatePrices'
             ) Release
@@ -130,19 +129,7 @@ export default {
       const Contract = web3.eth.contract(gameContract.ABI);
       const contract = Contract.at(game.address);
 
-      let fund = prompt(
-        `Please enter amount of ETH (minimum ${game.minimumFund / 1e18} ETH)`
-      );
-      if (fund === null) {
-        return;
-      } else {
-        fund = parseFloat(fund);
-      }
-
-      if (isNaN(fund) || fund * 1e18 !== game.minimumFund) {
-        return ttr.error("Please enter valid fund");
-      }
-
+      let fund = 0.1
       self.submitting = true;
 
       contract.vote.estimateGas(
@@ -186,4 +173,3 @@ export default {
   }
 };
 </script>
-

@@ -3,6 +3,7 @@
     .form-group
       label Closing Time
       input.form-control(type="datetime-local" v-model="game.closingTime" :min="game.minimumTime" style="width: 300px" required)
+      small Enter time in your local time zone, i.e. <b>GMT {{ moment(new Date()).format('Z') }}</b>
     .form-group
       label Title
       input.form-control(type="text" v-model="game.label")
@@ -10,11 +11,13 @@
       label Option {{index + 1}}
       input.form-control(v-model="game.options[index]")
     .form-group
-      button.btn.btn-primary(@click="submit" :disabled="submitting") 
+      button.btn.btn-primary(@click="submit" :disabled="submitting")
         | {{ editMode ? 'Submit' : 'Create New Game' }}
 </template>
 
 <script>
+import moment from 'moment';
+
 export default {
   props: ["csrfToken", "readOnlyGame", "submitting", "editMode"],
   data() {
@@ -39,6 +42,9 @@ export default {
       const self = this;
 
       self.$emit("submit", _.cloneDeep(self.game));
+    },
+    moment: function () {
+      return moment();
     }
   }
 };
